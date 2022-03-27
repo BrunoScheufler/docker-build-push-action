@@ -1,0 +1,62 @@
+name: Docker
+description: Build and push Docker images
+inputs:
+  # Image build settings
+  imageName:
+    description: "Image name to push"
+    required: true
+  target:
+    description: 'Docker target to build'
+    required: false
+  context:
+    description: 'Docker context to use'
+    required: true
+  dockerfilePath:
+    description: 'Dockerfile path'
+    required: false
+  # Versioning image
+  commit:
+    description: "Commit SHA"
+    required: true
+  # Registry settings
+  registryBaseUrl:
+    description: 'Docker registry base URL'
+    required: true
+  registryRepository:
+    description: 'Registry repository to use'
+    required: true
+  registryUsername:
+    description: 'Docker registry user'
+    required: true
+  registryPassword:
+    description: 'Docker registry password'
+    required: true
+runs:
+  using: "composite"
+  steps:
+    # Set up buildx (part of setting up docker/build-push-action)
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    # Prepare Docker (part of setting up docker/build-push-action)
+    - name: Login to registry
+      uses: docker/login-action@v1
+      with:
+        # Push to container registry
+        username: ${{ inputs.registryUsername }}
+        password: ${{ inputs.registryPassword }}
+        registry: ${{ inputs.registryBaseUrl }}
+    # Build and push docker image (https://github.com/docker/build-push-action)
+    - name: Build and push
+      uses: docker/build-push-action@v2
+      with:
+        context: ${{ inputs.context }}
+        target: ${{ inputs.target }}
+        # Specify commit_sha build arg to add version in container
+        build-args: commit_sha=${{ github.sha }}
+        # Tag with SHA
+        push: true
+        tags: ${{ inputs.registryBaseUrl }}/${{ inputs.registryRepository }}/${{ inputs.imageName }}:${{ inputs.commit }}
+        # Cache in GitHub Actions
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        file: ${{ inputs.dockerfilePath }}
