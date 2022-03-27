@@ -33,7 +33,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: brunoscheufler/docker-build-push
+      # uses latest version of the action
+      - uses: brunoscheufler/docker-build-push@main
         with:
           imageName: my-service
           context: .
