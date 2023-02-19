@@ -41,7 +41,7 @@ runs:
       uses: docker/setup-buildx-action@v2
     # Prepare Docker (part of setting up docker/build-push-action)
     - name: Login to registry
-      uses: docker/login-action@v1
+      uses: docker/login-action@v2
       with:
         # Push to container registry
         username: ${{ inputs.registryUsername }}
