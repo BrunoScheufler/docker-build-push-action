@@ -32,7 +32,7 @@ jobs:
     name: Build service image
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       # uses latest version of the action
       - uses: brunoscheufler/docker-build-push@main
         with:
